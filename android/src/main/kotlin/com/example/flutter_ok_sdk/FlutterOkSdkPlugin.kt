@@ -22,7 +22,7 @@ import ru.ok.android.sdk.util.OkScope
 
 class FlutterOkSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
 
-    internal var methodChannelResult: MethodChannel.Result? = null
+    internal var methodChannelResult: Result? = null
     private lateinit var channel: MethodChannel
 
     private lateinit var okLoginManager: Odnoklassniki
@@ -38,7 +38,7 @@ class FlutterOkSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Plug
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.getActivity();
+        activity = binding.activity;
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
@@ -48,7 +48,7 @@ class FlutterOkSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Plug
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_ok_sdk")
         channel.setMethodCallHandler(this)
-        context = flutterPluginBinding.getApplicationContext()
+        context = flutterPluginBinding.applicationContext
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -95,9 +95,7 @@ class FlutterOkSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Plug
                 hashmap["access_token"] = token
                 hashmap["secret"] = secretKey
                 hashmap["expires_in"] = expires_in
-                methodChannelResult?.let {
-                    it.success(hashmap)
-                }
+                methodChannelResult?.success(hashmap)
             } catch (exception: JSONException) {
                 onError(exception.localizedMessage)
             }
@@ -105,9 +103,7 @@ class FlutterOkSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Plug
         }
 
         override fun onError(error: String?) {
-            methodChannelResult?.let {
-                it.error("UNAVAILABLE", "OK login error", null)
-            }
+            methodChannelResult?.error("UNAVAILABLE", "OK login error", null)
         }
     }
 
