@@ -27,7 +27,7 @@ class FlutterOkSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Plug
 
     private lateinit var okLoginManager: Odnoklassniki
     private lateinit var context: Context
-    private lateinit var activity: Activity
+    var activity: Activity? = null
 
     override fun onDetachedFromActivity() {
         TODO("Not yet implemented")
@@ -38,7 +38,7 @@ class FlutterOkSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Plug
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.activity;
+        activity = binding.activity
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
@@ -60,13 +60,13 @@ class FlutterOkSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Plug
             methodChannelResult = result
 
             okLoginManager = Odnoklassniki.createInstance(
-                    context,
-                    getResourceFromContext(context, "ok_sdk_app_id"),
-                    getResourceFromContext(context, "ok_sdk_app_key")
+                    activity!!.applicationContext,
+                    getResourceFromContext(activity!!.applicationContext, "ok_sdk_app_id"),
+                    getResourceFromContext(activity!!.applicationContext, "ok_sdk_app_key")
             )
 
-            okLoginManager.requestAuthorization(activity,
-                    getResourceFromContext(context, "ok_redirect_url"),
+            okLoginManager.requestAuthorization(activity!!,
+                    getResourceFromContext(activity!!.applicationContext, "ok_redirect_url"),
                     OkAuthType.WEBVIEW_OAUTH,
                     OkScope.VALUABLE_ACCESS
             )
