@@ -1,39 +1,58 @@
 package com.example.flutter_ok_sdk
 
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
+import androidx.annotation.NonNull
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
-import io.flutter.plugin.common.PluginRegistry.Registrar
 import org.json.JSONException
 import org.json.JSONObject
-
 import ru.ok.android.sdk.Odnoklassniki
 import ru.ok.android.sdk.OkListener
 import ru.ok.android.sdk.util.OkAuthType
 import ru.ok.android.sdk.util.OkScope
 
-class FlutterOkSdkPlugin : MethodCallHandler, PluginRegistry.ActivityResultListener {
+class FlutterOkSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
 
     internal var methodChannelResult: MethodChannel.Result? = null
+    private lateinit var channel: MethodChannel
 
     private lateinit var okLoginManager: Odnoklassniki
-    var activity: Activity? = null
+    private lateinit var context: Context
+    private lateinit var activity: Activity
 
-    companion object {
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val channel = MethodChannel(registrar.messenger(), "flutter_ok_sdk")
-            val plugin = FlutterOkSdkPlugin()
-            registrar.addActivityResultListener(plugin)
-            plugin.activity = registrar.activity()
-            channel.setMethodCallHandler(plugin)
-        }
+    override fun onDetachedFromActivity() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activity = binding.getActivity();
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_ok_sdk")
+        channel.setMethodCallHandler(this)
+        context = flutterPluginBinding.getApplicationContext()
+    }
+
+    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+        channel.setMethodCallHandler(null)
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -41,13 +60,13 @@ class FlutterOkSdkPlugin : MethodCallHandler, PluginRegistry.ActivityResultListe
             methodChannelResult = result
 
             okLoginManager = Odnoklassniki.createInstance(
-                    activity!!.applicationContext,
-                    getResourceFromContext(activity!!.applicationContext, "ok_sdk_app_id"),
-                    getResourceFromContext(activity!!.applicationContext, "ok_sdk_app_key")
+                    context,
+                    getResourceFromContext(context, "ok_sdk_app_id"),
+                    getResourceFromContext(context, "ok_sdk_app_key")
             )
 
-            okLoginManager.requestAuthorization(activity!!,
-                    getResourceFromContext(activity!!.applicationContext, "ok_redirect_url"),
+            okLoginManager.requestAuthorization(activity,
+                    getResourceFromContext(context, "ok_redirect_url"),
                     OkAuthType.WEBVIEW_OAUTH,
                     OkScope.VALUABLE_ACCESS
             )

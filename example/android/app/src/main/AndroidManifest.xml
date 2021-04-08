@@ -44,5 +44,8 @@
                         android:scheme="okauth" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
     </application>
 </manifest>
