@@ -28,21 +28,23 @@ class FlutterOkSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Plug
     private lateinit var okLoginManager: Odnoklassniki
     private lateinit var context: Context
     var activity: Activity? = null
+    var activityPluginBinding: ActivityPluginBinding? = null
 
     override fun onDetachedFromActivity() {
-        TODO("Not yet implemented")
+        resetActivity()
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        TODO("Not yet implemented")
+        setActivity(binding)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.activity
+        setActivity(binding)
+
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        TODO("Not yet implemented")
+        resetActivity()
     }
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -112,5 +114,19 @@ class FlutterOkSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Plug
             return okLoginManager.onAuthActivityResult(requestCode, resultCode, data, okAuthCallback)
         }
         return false
+    }
+
+    private fun setActivity(activityPluginBinding: ActivityPluginBinding) {
+        this.activity = activityPluginBinding.activity
+        activityPluginBinding.addActivityResultListener(this)
+        this.activityPluginBinding = activityPluginBinding
+    }
+
+    private fun resetActivity() {
+        if (this.activityPluginBinding != null) {
+            this.activityPluginBinding?.removeActivityResultListener(this)
+            this.activityPluginBinding = null
+            this.activity = null
+        }
     }
 }
