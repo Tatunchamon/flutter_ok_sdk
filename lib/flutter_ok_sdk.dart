@@ -13,8 +13,8 @@ class FlutterOkSdk {
 }
 
 class OkToken {
-  final String token;
-  final String secret;
+  final String? token;
+  final String? secret;
 
   OkToken(this.token, this.secret);
 }
