@@ -12,8 +12,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String token = '';
-  String secret = '';
+  String? token = '';
+  String? secret = '';
 
   @override
   void initState() {
