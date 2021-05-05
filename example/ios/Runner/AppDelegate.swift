@@ -12,7 +12,7 @@ import flutter_ok_sdk
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
-    override func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         OKLogin.processOpen(url)
         return true
     }
